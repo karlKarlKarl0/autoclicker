@@ -1,12 +1,16 @@
 from pynput import keyboard
 from pynput.mouse import Button, Controller
-import threading
+from pynput.keyboard import Key, Controller
+from threading import Thread
 import time
 
-toggleKey = 'n'
+clickToggleKey = 'n'
+pressToggleKey = 'm'
 clicking = False 
 pressing = False
+pressingKey = 'a'
 mouse = Controller()
+kb = Controller()
 click_time_int = .1 #time between clicks
 press_time_int = .1
 #maybe later implement a toggleHotKey
@@ -23,13 +27,18 @@ def click_left():
     mouse.release(Button.left)
 
 
-def toggle_click(key):
+
+def toggle_clickpress(key):
     try:
         #print(f'Key {key.char} pressed')
-        if key.char == toggleKey:  #checks if toggle key is pressed
-            print("toggle key pressed")
+        if key.char == clickToggleKey:  #checks if toggle key is pressed
+            print("click toggle key pressed")
             global clicking 
             clicking = not clicking
+        elif key.char == pressToggleKey:
+
+            global pressing
+            pressing = not pressing
         
     except AttributeError:
         print(f'Special key {key} pressed')
@@ -44,15 +53,24 @@ def clickingLoop():
             click_left()
             time.sleep(click_time_int)
 
+def pressingLoop():
+    while True:
+        if pressing:
+            kb.press(pressingKey)
+            time.sleep(press_time_int)
+
 
 
 def main():
     print("hello") 
     #below is the event listener for toggle
-    listener = keyboard.Listener(on_release=toggle_click)
+    listener = keyboard.Listener(on_release=toggle_clickpress)
     listener.start()
     
-    clickingLoop()
+    cThread = Thread(target = clickingLoop)
+    pThread = Thread(target = pressingLoop)
+    cThread.start()
+    pThread.start()
 
 
 
