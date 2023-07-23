@@ -63,15 +63,14 @@ def pressingLoop():
 
 def main():
     print("hello") 
-    #below is the event listener for toggle
+
+    cThread = Thread(target = clickingLoop())
+    pThread = Thread(target = pressingLoop)
     listener = keyboard.Listener(on_release=toggle_clickpress)
     listener.start()
-    
-    cThread = Thread(target = clickingLoop)
-    pThread = Thread(target = pressingLoop)
     cThread.start()
     pThread.start()
-
+    
 
 
 if __name__ == "__main__":
